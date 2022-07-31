@@ -1,6 +1,6 @@
 [package]
 name = "calculator"
-version = "0.1.0"
+version = "1.0.0"
 authors = ["Dominik Schwaiger <mail@dominik-schwaiger.ch>"]
 description = "A simple terminal based calculator application"
 license = "MIT"

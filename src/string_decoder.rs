@@ -1,7 +1,5 @@
 /// Module for decoding a string into math operations
 pub mod string_decoder {
-    use std::fs::OpenOptions;
-
     enum Operation {
         Addition,
         Subtraction,
