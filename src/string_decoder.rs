@@ -1,10 +1,21 @@
 /// Module for decoding a string into math operations
 pub mod string_decoder {
+    use std::fs::OpenOptions;
+
+    enum Operation {
+        Addition,
+        Subtraction,
+        Division,
+        Multiplication,
+    }
+
     /// Takes a string with math operations as input and executes them
     ///
     /// # Arguments
     ///
     /// * `input` - The String to decode
+    ///
+    /// # ONLY ONE OPERATION AT THE TIME
     ///
     /// # Supported Opperations
     /// - Addition
@@ -12,6 +23,7 @@ pub mod string_decoder {
     /// - Division
     /// - Multiplication
     /// - ~Brackets~
+    ///
     ///
     ///
     /// # Examples
@@ -24,29 +36,59 @@ pub mod string_decoder {
             panic!("First character can't be an operator!")
         }
 
-        let mut result = 0;
+        let mut chars = input.chars().into_iter();
 
-        let mut temp_number = String::new();
+        let mut num1 = String::new();
+        let mut num2 = String::new();
 
-        // cycle trough every character, if is a number, at to temporary storage, if it is an operation, execute it on the sum and the temporary stored number
-        for char in input.chars() {
-            // if char is numeric, add to temp_number
-            if char.is_numeric() {
-                temp_number.push(char);
+        let mut operation: Option<Operation> = None;
+
+        let mut tmp_char: char;
+
+        // get first number and operation
+        while operation.is_none() {
+            match chars.next() {
+                None => break,
+                Some(x) => tmp_char = x,
+            }
+
+            if tmp_char.is_numeric() {
+                num1.push(tmp_char)
             } else {
-                match char {
-                    '+' => result += str_to_int(&temp_number),
-                    '-' => result -= str_to_int(&temp_number),
-                    '/' => result /= str_to_int(&temp_number),
-                    '*' => result *= str_to_int(&temp_number),
-                    _ => panic!("Operation not supported!"),
+                match tmp_char {
+                    '+' => operation = Some(Operation::Addition),
+                    '-' => operation = Some(Operation::Subtraction),
+                    '*' => operation = Some(Operation::Multiplication),
+                    '/' => operation = Some(Operation::Division),
+                    _ => panic!("Operator not supported!"),
                 }
-
-                temp_number.clear();
             }
         }
 
-        return result;
+        // get second number
+        for tmp_char in chars {
+            if tmp_char.is_numeric() {
+                num2.push(tmp_char)
+            }
+        }
+
+        let result: i32;
+
+        let num1 = str_to_int(&num1);
+        let num2 = str_to_int(&num2);
+
+        // calculate result
+        match operation {
+            Some(op) => match op {
+                Operation::Addition => result = num1 + num2,
+                Operation::Subtraction => result = num1 - num2,
+                Operation::Division => result = num1 / num2,
+                Operation::Multiplication => result = num1 * num2,
+            },
+            None => panic!("No operation selected"),
+        }
+
+        result
     }
 
     fn str_to_int(string: &str) -> i32 {
